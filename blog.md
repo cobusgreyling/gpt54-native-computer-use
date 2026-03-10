@@ -2,11 +2,15 @@
 
 ## The first general-purpose model that operates your computer
 
+![GPT-5.4 Native Computer Use](images/01-hero.png)
+
 I wrote about OpenAI's Operator and CUA (Computer-Using Agent) when it first launched. The idea was compelling but the execution felt early. It worked through a hosted browser session, the latency was noticeable, and the success rates on real-world tasks were modest at best.
 
 GPT-5.4 changes the picture entirely. Computer use is no longer a separate product or a hosted wrapper. It is a native capability baked into the model itself. You send a screenshot, the model returns structured actions. No intermediary. No hosted session. Just a tool type in the API.
 
 What caught my attention is how far the benchmarks have moved. CUA struggled with complex multi-step workflows. GPT-5.4 now outperforms humans on the same benchmarks. That is not an incremental improvement. That is a category shift.
+
+![Claude Code as a harness example](images/02-claude-code.png)
 
 ### In short
 
@@ -26,6 +30,8 @@ Previous approaches to computer automation required application-specific APIs, b
 
 GPT-5.4 takes a fundamentally different approach. It looks at the screen, decides what to do, and issues structured actions. The same model that writes code and answers questions can also navigate your desktop.
 
+![Native computer use architecture](images/05-native-computer-use.png)
+
 The loop is simple:
 
 1. Send a task description with the `computer` tool enabled
@@ -40,6 +46,8 @@ No DOM parsing. No accessibility tree. No selectors. Just pixels and actions.
 ### The action vocabulary
 
 GPT-5.4 supports a complete set of UI primitives:
+
+![Action vocabulary](images/04-action-vocabulary.png)
 
 | Action | What it does |
 |---|---|
@@ -112,6 +120,8 @@ The `detail: "original"` setting preserves full resolution (up to 10.24M pixels)
 
 The implementation pattern is a build-run-verify-fix loop:
 
+![Agent loop](images/06-agent-loop.png)
+
 ```
 Task → Model plans → Actions emitted → Harness executes →
 Screenshot captured → Model verifies → More actions or done
@@ -133,6 +143,8 @@ The native approach requires no code per application. The programmatic approache
 
 ### Benchmarks
 
+![Benchmarks](images/03-benchmarks.png)
+
 | Benchmark | GPT-5.4 | GPT-5.2 | Human |
 |---|---|---|---|
 | OSWorld-Verified | 75.0% | 47.3% | 72.4% |
@@ -140,6 +152,14 @@ The native approach requires no code per application. The programmatic approache
 | Property tax portals (30K sites) | 95% first attempt | ~73–79% | — |
 
 GPT-5.4 completed sessions approximately 3x faster than prior CUA models while using approximately 70% fewer tokens.
+
+### The CUA Sample App
+
+OpenAI published a reference implementation showing how to build a full computer-use agent.
+
+![CUA Sample App architecture](images/07-cua-sample-app.png)
+
+The sample app demonstrates the complete agent loop — screenshot capture, action execution, verification, and multi-turn context management — using the native `computer` tool with GPT-5.4.
 
 ### Model variants
 
@@ -181,10 +201,17 @@ Every application with a GUI is now programmable through natural language.
 
 ---
 
+*I'm passionate about exploring the intersection of AI and language. Chief Evangelist @ Kore.ai*
+
+![Cobus Greyling](images/08-author.jpeg)
+
+---
+
 ### Sources
 
 - [Introducing GPT-5.4 | OpenAI](https://openai.com/index/introducing-gpt-5-4/)
 - [GPT-5.4 Computer Use Guide | OpenAI API](https://developers.openai.com/api/docs/guides/tools-computer-use)
+- [OpenAI CUA Sample App](https://github.com/openai/openai-cua-sample-app)
 - [OpenAI launches GPT-5.4 with Pro and Thinking versions | TechCrunch](https://techcrunch.com/2026/03/05/openai-launches-gpt-5-4-with-pro-and-thinking-versions/)
 - [GPT-5.4 with native computer use mode | VentureBeat](https://venturebeat.com/technology/openai-launches-gpt-5-4-with-native-computer-use-mode-financial-plugins-for)
 - [GPT-5.4 Advanced Reasoning and Computer-Use | CybersecurityNews](https://cybersecuritynews.com/gpt-5-4-launched/)
