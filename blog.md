@@ -1,71 +1,94 @@
 # GPT-5.4 Native Computer Use
 
-## The first general-purpose model that operates your computer
+**The first general-purpose model that truly operates your computer.**
 
 ![GPT-5.4 Native Computer Use](images/01-hero.png)
 
-I wrote about OpenAI's Operator and CUA (Computer-Using Agent) when it first launched. The idea was compelling but the execution felt early. It worked through a hosted browser session, the latency was noticeable, and the success rates on real-world tasks were modest at best.
+Elon Musk nailed it in a recent interview…
 
-GPT-5.4 changes the picture entirely. Computer use is no longer a separate product or a hosted wrapper. It is a native capability baked into the model itself. You send a screenshot, the model returns structured actions. No intermediary. No hosted session. Just a tool type in the API.
+Before we crack full physical AI autonomy, we first need to master digital AI autonomy.
 
-What caught my attention is how far the benchmarks have moved. CUA struggled with complex multi-step workflows. GPT-5.4 now outperforms humans on the same benchmarks. That is not an incremental improvement. That is a category shift.
+That means AI using a computer the way a human does.
 
-![Claude Code as a harness example](images/02-claude-code.png)
+Navigating UIs, clicking, typing, scrolling. Fully autonomous.
 
-### In short
+Anthropic has a heavy focus on computer use. With Claude Code for terminal operation.
 
-GPT-5.4 is the first general-purpose model from OpenAI with native computer-use capabilities.
+![Claude Code](images/02-claude-code.png)
 
-It inspects screenshots, returns structured UI actions, and lets agents operate software through the interface — clicking, typing, scrolling, dragging — without custom integrations per application.
+https://github.com/openai/openai-cua-sample-app
 
-One model. Any application. No application-specific API required.
+The recent Vercept acquisition for desktop-level control. Companies are racing to solve for this capability.
 
-On OSWorld-Verified, GPT-5.4 achieves a 75.0% success rate. Human performance on the same benchmark sits at 72.4%. GPT-5.2 scored 47.3%.
+I've written extensively about AI Agents via CLI (still crucial for deep system integration, especially Unix-like environments), but GUI/screen navigation has always been the missing piece for broad, real-world agency.
 
-The model surpasses human-level performance on general computer operation tasks.
+When OpenAI first shipped Operator along with the initial Computer-Using Agent (CUA), I covered it.
 
-### What native computer use means
+The concept was compelling. A model that could see and act on screens. But execution felt early, to be honest.
 
-Previous approaches to computer automation required application-specific APIs, browser extensions, or scripting frameworks. Each integration was bespoke.
+Hosted browser sessions, noticeable latency, modest real-world success rates.
 
-GPT-5.4 takes a fundamentally different approach. It looks at the screen, decides what to do, and issues structured actions. The same model that writes code and answers questions can also navigate your desktop.
+The pixel-to-action paradigm is what makes native computer use feel truly agentic.
 
-![Native computer use architecture](images/05-native-computer-use.png)
+The interface becomes the universal API, powered by vision understanding rather than brittle selectors or per-app integrations.
 
-The loop is simple:
+## GPT-5.4 changes this
 
-1. Send a task description with the `computer` tool enabled
-2. The model returns an `actions[]` array — click, type, scroll, drag, keypress
-3. Your harness executes the actions
-4. Capture a screenshot
-5. Send the screenshot back
-6. Repeat until the task is complete
+Computer use is no longer bolted-on or wrapped in a hosted service.
 
-No DOM parsing. No accessibility tree. No selectors. Just pixels and actions.
+It's native. Baked directly into the model.
 
-### The action vocabulary
+You feed it a screenshot (or let it request one), it returns structured actions.
 
-GPT-5.4 supports a complete set of UI primitives:
+No intermediaries. Just a clean computer tool in the API.
 
-![Action vocabulary](images/04-action-vocabulary.png)
+The benchmark leap grabbed my attention.
 
-| Action | What it does |
-|---|---|
-| `screenshot` | Capture current UI state |
-| `click` | Click at (x, y) coordinates — left, middle, or right button |
-| `double_click` | Double-click at position |
-| `type` | Enter text |
-| `keypress` | Press keyboard keys |
-| `scroll` | Scroll at position with scrollX/scrollY |
-| `drag` | Drag from one position to another |
-| `move` | Move cursor to coordinates |
-| `wait` | Pause execution |
+GPT-5.4 with multi-step workflows. GPT-5.4 now outperforms humans on key tests…
 
-This vocabulary covers everything a human can do with a mouse and keyboard.
+![Benchmarks](images/03-benchmarks.png)
 
-### How the API works
+https://openai.com/index/introducing-gpt-5-4/
 
-Enable computer use by adding the `computer` tool:
+## The Interface is the API
+
+No more bespoke connectors for every app…
+
+Describe the goal in natural language, point the model at the screen, and it figures out the clicks, types, scrolls.
+
+GPT-5.4 covers the full human input set, as seen below…
+
+## Action Vocabulary
+
+![Action Vocabulary](images/04-action-vocabulary.png)
+
+A vision-language model that reads GUIs natively.
+
+Buttons, menus, forms, dialogs.
+
+The same way we do.
+
+With a 1M token context window, long multi-screen workflows become practical in one session.
+
+## What native computer use opens up
+
+![Native computer use](images/05-native-computer-use.png)
+
+Old automation needed per-app APIs, extensions, or brittle scripts. GPT-5.4 flips it.
+
+Screenshot to reasoning to actions.
+
+The same model that codes, reasons, and chats can now drive your desktop.
+
+The loop is clean:
+
+![Agent loop](images/06-agent-loop.png)
+
+No DOM scraping. No accessibility trees. No brittle selectors. Just pixels and primitives.
+
+## API in action
+
+Enable it like this (Python example):
 
 ```python
 from openai import OpenAI
@@ -75,133 +98,65 @@ client = OpenAI()
 response = client.responses.create(
     model="gpt-5.4",
     tools=[{"type": "computer"}],
-    input="Open the browser and search for 'NVIDIA Nemotron'"
+    input="Open browser and search for 'NVIDIA Nemotron'"
 )
 ```
 
-The model responds with structured actions:
+The model returns structured actions:
 
 ```json
 {
-  "output": [{
     "type": "computer_call",
-    "call_id": "call_001",
+    "call_id": "call_abc123",
     "actions": [
-      {"type": "screenshot"},
-      {"type": "click", "button": "left", "x": 405, "y": 157},
-      {"type": "type", "text": "NVIDIA Nemotron"}
+        {"type": "screenshot"},
+        {"type": "click", "button": "left", "x": 405, "y": 157},
+        {"type": "type", "text": "NVIDIA Nemotron"}
     ]
-  }]
 }
 ```
 
-After executing the actions, send a screenshot back:
+Execute the actions, take a screenshot (base64), send it back with `detail: "original"` for full-res accuracy.
 
-```python
-response = client.responses.create(
-    model="gpt-5.4",
-    tools=[{"type": "computer"}],
-    previous_response_id=response.id,
-    input=[{
-        "type": "computer_call_output",
-        "call_id": call_id,
-        "output": {
-            "type": "computer_screenshot",
-            "image_url": f"data:image/png;base64,{screenshot_base64}",
-            "detail": "original"
-        }
-    }]
-)
+## OpenAI's CUA Sample App
+
+The CUA sample app is a solid reference implementation.
+
+![CUA Sample App](images/07-cua-sample-app.png)
+
+https://github.com/openai/openai-cua-sample-app
+
+A TypeScript monorepo showing browser-focused CUA…
+
+Run it locally:
+
+```bash
+git clone <repo-url>
+cd openai-cua-sample-app
+corepack enable
+pnpm install
+cp .env.example .env
 ```
 
-The `detail: "original"` setting preserves full resolution (up to 10.24M pixels) for accurate click targeting.
+Great starting point for your own harness.
 
-### The agent loop
+## Three Ways to Build
 
-The implementation pattern is a build-run-verify-fix loop:
+**1. Native computer tool** — Screenshot + coordinate actions. Ideal for general desktop/browser automation
 
-![Agent loop](images/06-agent-loop.png)
+**2. Code execution** — Give a persistent Playwright/Python REPL. Model scripts for hybrid visual + programmatic control
 
-```
-Task → Model plans → Actions emitted → Harness executes →
-Screenshot captured → Model verifies → More actions or done
-```
+**3. Custom tool wrappers** — Wrap Playwright/Selenium as callable tools
 
-The model does not just execute blindly. It inspects the result of each action batch, verifies whether the step succeeded, and adjusts if something went wrong.
+Native wins for zero-per-app integration. Code mode wins for repetitive precision.
 
-This self-correcting behaviour is what pushes the success rate above human performance. On property tax portal evaluations across ~30K sites, GPT-5.4 achieved 95% success on the first attempt and 100% within three attempts.
+## The Base64 Screenshot Loop
 
-### Three ways to implement
-
-**1. Native computer tool** — The model inspects screenshots and returns coordinate-based actions. Best for general-purpose desktop or browser automation.
-
-**2. Code execution** — Provide a JavaScript or Python REPL with a persistent browser object. The model writes Playwright scripts that combine visual and programmatic interaction.
-
-**3. Custom tool wrapping** — Wrap existing Playwright/Selenium harnesses as normal tools. The model calls them by name with structured arguments.
-
-The native approach requires no code per application. The programmatic approaches offer more precision for repetitive workflows.
-
-### Benchmarks
-
-![Benchmarks](images/03-benchmarks.png)
-
-| Benchmark | GPT-5.4 | GPT-5.2 | Human |
-|---|---|---|---|
-| OSWorld-Verified | 75.0% | 47.3% | 72.4% |
-| WebArena-Verified | Top score | — | — |
-| Property tax portals (30K sites) | 95% first attempt | ~73–79% | — |
-
-GPT-5.4 completed sessions approximately 3x faster than prior CUA models while using approximately 70% fewer tokens.
-
-### The CUA Sample App
-
-OpenAI published a reference implementation showing how to build a full computer-use agent.
-
-![CUA Sample App architecture](images/07-cua-sample-app.png)
-
-The sample app demonstrates the complete agent loop — screenshot capture, action execution, verification, and multi-turn context management — using the native `computer` tool with GPT-5.4.
-
-### Model variants
-
-GPT-5.4 ships in three variants:
-
-**GPT-5.4** — The standard model. Available via API as `gpt-5.4`. Computer use supported.
-
-**GPT-5.4 Thinking** — Reasoning-focused variant available in ChatGPT. Chain-of-thought before actions.
-
-**GPT-5.4 Pro** — Maximum performance. Available via API as `gpt-5.4-pro`. For the most complex agentic workflows.
-
-All variants support up to 1M tokens of context, enabling agents to plan and execute across long task horizons.
-
-### Safety considerations
-
-OpenAI recommends running computer use in an isolated environment:
-
-- Use a sandboxed browser or Docker VM
-- Keep a human in the loop for high-impact actions
-- Pass empty `env` objects to prevent credential leakage
-- Disable extensions and file-system access
-- Treat all page content as untrusted input
-
-The model can be manipulated by adversarial content on screen. Isolation is not optional.
-
-### The bigger picture
-
-Computer use collapses the integration problem.
-
-Instead of building connectors for every application, you point the model at the screen and describe what you want done. The model figures out the clicks.
-
-This is not a wrapper around Selenium. It is a vision-language model that understands GUIs natively. It reads buttons, menus, forms, and dialog boxes the same way a human does — by looking at them.
-
-The 1M token context window means multi-step workflows spanning dozens of screens are feasible in a single session.
-
-> The interface is the API.
-
-Every application with a GUI is now programmable through natural language.
+The base64 screenshot approach is the core mechanism feeding visual UI context to the model.
 
 ---
 
-*I'm passionate about exploring the intersection of AI and language. Chief Evangelist @ Kore.ai*
+*Chief Evangelist @ Kore.ai | I'm passionate about exploring the intersection of AI and language. From Language Models, AI Agents to Agentic Applications, Development Frameworks & Data-Centric Productivity Tools, I share insights and ideas on how these technologies are shaping the future.*
 
 ![Cobus Greyling](images/08-author.jpeg)
 
@@ -210,8 +165,5 @@ Every application with a GUI is now programmable through natural language.
 ### Sources
 
 - [Introducing GPT-5.4 | OpenAI](https://openai.com/index/introducing-gpt-5-4/)
-- [GPT-5.4 Computer Use Guide | OpenAI API](https://developers.openai.com/api/docs/guides/tools-computer-use)
-- [OpenAI CUA Sample App](https://github.com/openai/openai-cua-sample-app)
-- [OpenAI launches GPT-5.4 with Pro and Thinking versions | TechCrunch](https://techcrunch.com/2026/03/05/openai-launches-gpt-5-4-with-pro-and-thinking-versions/)
-- [GPT-5.4 with native computer use mode | VentureBeat](https://venturebeat.com/technology/openai-launches-gpt-5-4-with-native-computer-use-mode-financial-plugins-for)
-- [GPT-5.4 Advanced Reasoning and Computer-Use | CybersecurityNews](https://cybersecuritynews.com/gpt-5-4-launched/)
+- [Computer use | OpenAI API](https://developers.openai.com/api/docs/guides/tools-computer-use)
+- [OpenAI CUA Sample App | GitHub](https://github.com/openai/openai-cua-sample-app)
